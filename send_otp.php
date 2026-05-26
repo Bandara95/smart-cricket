@@ -2,13 +2,6 @@
 date_default_timezone_set('Asia/Colombo');
 include 'config/db.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-
 $otp    = rand(100000, 999999);
 $expiry = date("Y-m-d H:i:s", strtotime("+10 minutes"));
 
@@ -42,30 +35,16 @@ if (isset($_SESSION['pending_user'])) {
     exit;
 }
 
-// ── Brevo SMTP Credentials ────────────────────────
-$smtp_host     = 'smtp-relay.brevo.com';
-$smtp_port     = 587;
-$smtp_username = getenv('MAIL_USERNAME') ?: 'ac8da0001@smtp-brevo.com';
-$smtp_password = getenv('MAIL_PASSWORD') ?: '';
-$mail_from     = getenv('MAIL_FROM')     ?: 'manathungamahaththaya@gmail.com';
+// ── Brevo API Key ─────────────────────────────────
+$api_key   = getenv('BREVO_API_KEY') ?: '';
+$mail_from = getenv('MAIL_FROM')     ?: 'manathungamahaththaya@gmail.com';
 
-// ── OTP Email යවනවා ───────────────────────────────
-try {
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host       = $smtp_host;
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $smtp_username;
-    $mail->Password   = $smtp_password;
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = $smtp_port;
-
-    $mail->setFrom($mail_from, 'Cricket Arena');
-    $mail->addAddress($email);
-    $mail->Subject = 'Your OTP Code - SmartCricket';
-    $mail->isHTML(true);
-
-    $mail->Body = "
+// ── OTP Email - Brevo HTTP API ────────────────────
+$data = [
+    'sender'     => ['name' => 'Cricket Arena', 'email' => $mail_from],
+    'to'         => [['email' => $email]],
+    'subject'    => 'Your OTP Code - SmartCricket',
+    'htmlContent'=> "
     <div style='background-color: #050505; padding: 40px; font-family: Arial, sans-serif; text-align: center;'>
         <div style='max-width: 500px; margin: 0 auto; background: #0f111a; border: 1px solid #0073ff; border-radius: 10px; padding: 40px 30px; box-shadow: 0 4px 20px rgba(0, 115, 255, 0.15);'>
             <h2 style='color: #0073ff; font-size: 26px; font-weight: 800; margin-bottom: 5px;'>SmartCricket Arena</h2>
@@ -82,16 +61,27 @@ try {
             </p>
         </div>
     </div>
-    ";
+    "
+];
 
-    $mail->AltBody = 'Your OTP code is: ' . $otp;
-    $mail->send();
+$ch = curl_init('https://api.brevo.com/v3/smtp/email');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Content-Type: application/json',
+    'api-key: ' . $api_key
+]);
 
+$response = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($http_code === 201) {
     header("Location: verify_otp.php");
     exit;
-
-} catch (Exception $e) {
-    error_log("Mail send error: " . $mail->ErrorInfo);
+} else {
+    error_log("Brevo API error: " . $response);
     die("Error: OTP could not be sent. Please try again.");
 }
 ?>
