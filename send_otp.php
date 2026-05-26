@@ -42,29 +42,27 @@ if (isset($_SESSION['pending_user'])) {
     exit;
 }
 
-// ── Mail Credentials ──────────────────────────────
-if (file_exists('config/mail_config.php')) {
-    include 'config/mail_config.php';
-} else {
-    define('MAIL_USERNAME', getenv('MAIL_USERNAME') ?: 'manathungamahaththaya@gmail.com');
-    define('MAIL_PASSWORD', getenv('MAIL_PASSWORD') ?: '');
-    define('MAIL_FROM',     getenv('MAIL_FROM')     ?: 'manathungamahaththaya@gmail.com');
-}
+// ── Brevo SMTP Credentials ────────────────────────
+$smtp_host     = 'smtp-relay.brevo.com';
+$smtp_port     = 587;
+$smtp_username = getenv('MAIL_USERNAME') ?: 'ac8da0001@smtp-brevo.com';
+$smtp_password = getenv('MAIL_PASSWORD') ?: '';
+$mail_from     = getenv('MAIL_FROM')     ?: 'manathungamahaththaya@gmail.com';
 
 // ── OTP Email යවනවා ───────────────────────────────
 try {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';
+    $mail->Host       = $smtp_host;
     $mail->SMTPAuth   = true;
-    $mail->Username   = MAIL_USERNAME;
-    $mail->Password   = MAIL_PASSWORD;
+    $mail->Username   = $smtp_username;
+    $mail->Password   = $smtp_password;
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = 587;
+    $mail->Port       = $smtp_port;
 
-    $mail->setFrom(MAIL_FROM, 'Cricket Arena');
+    $mail->setFrom($mail_from, 'Cricket Arena');
     $mail->addAddress($email);
-    $mail->Subject = 'Your New OTP Code - SmartCricket';
+    $mail->Subject = 'Your OTP Code - SmartCricket';
     $mail->isHTML(true);
 
     $mail->Body = "
