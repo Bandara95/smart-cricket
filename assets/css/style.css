@@ -932,7 +932,256 @@ body {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(255, 255, 255, 0.25);
 }
+/* =============================================================
+   MOBILE RESPONSIVE FIXES
+   ============================================================= */
 
+/* ── Tablet (768px - 992px) ─────────────────────────────────── */
+@media (max-width: 992px) {
+    .navbar-container {
+        padding: 15px 20px;
+    }
+
+    .hero-title {
+        font-size: 38px;
+    }
+
+    .hero-subtitle {
+        font-size: 14px;
+    }
+
+    .arena-hero {
+        padding: 0 5%;
+    }
+
+    .arena-features {
+        padding: 60px 5%;
+    }
+
+    .arena-location {
+        padding: 60px 5%;
+    }
+
+    .features-grid {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .location-container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .booking-container {
+        flex-direction: column;
+    }
+
+    .booking-section {
+        padding: 120px 20px 40px 20px;
+    }
+
+    .booking-main {
+        padding: 20px;
+    }
+
+    .stats-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        padding: 20px;
+    }
+
+    .dashboard-table {
+        width: 800px;
+    }
+}
+
+/* ── Mobile (max 768px) ─────────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* Navbar */
+    .navbar-container {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .arena-logo {
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    /* Hero */
+    .arena-hero {
+        padding: 0 5%;
+        height: auto;
+        min-height: 100vh;
+        align-items: flex-end;
+        padding-bottom: 60px;
+    }
+
+    .arena-hero-content {
+        max-width: 100%;
+    }
+
+    .hero-title {
+        font-size: 28px;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-subtitle {
+        font-size: 13px;
+    }
+
+    .arena-hero-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .arena-btn {
+        padding: 14px 20px;
+        font-size: 13px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Features */
+    .arena-features {
+        padding: 50px 16px;
+    }
+
+    .section-header h2 {
+        font-size: 24px;
+    }
+
+    .feature-card {
+        padding: 25px 20px;
+    }
+
+    /* Location */
+    .arena-location {
+        padding: 50px 16px;
+    }
+
+    .location-text h2 {
+        font-size: 24px;
+    }
+
+    /* Booking */
+    .booking-section {
+        padding: 100px 16px 40px 16px;
+    }
+
+    .booking-main {
+        padding: 16px;
+    }
+
+    .step-box {
+        padding: 20px;
+    }
+
+    .slots-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .slot-card {
+        padding: 15px 10px;
+    }
+
+    .slot-time {
+        font-size: 13px;
+    }
+
+    .slot-legend {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* Dashboard */
+    .stat-card {
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .stat-card i {
+        font-size: 28px;
+    }
+
+    .stat-card p {
+        font-size: 20px;
+    }
+
+    .table-container {
+        padding: 16px;
+        overflow-x: auto;
+    }
+
+    .dashboard-table {
+        min-width: 600px;
+    }
+
+    /* Modal */
+    .modal-content {
+        padding: 25px 18px;
+        max-width: 95vw;
+    }
+
+    /* Footer */
+    .arena-footer {
+        padding: 25px 16px;
+        font-size: 12px;
+    }
+
+    /* View switcher */
+    .view-switcher {
+        width: 100%;
+    }
+
+    .switch-btn {
+        flex: 1;
+        padding: 10px 10px;
+        font-size: 12px;
+    }
+}
+
+/* ── Small Mobile (max 480px) ───────────────────────────────── */
+@media (max-width: 480px) {
+
+    .hero-title {
+        font-size: 24px;
+    }
+
+    .hero-badge {
+        font-size: 11px;
+    }
+
+    .slots-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        gap: 12px;
+    }
+
+    .step-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
 
 
 
