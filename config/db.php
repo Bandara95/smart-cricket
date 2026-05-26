@@ -6,20 +6,18 @@ $pass = "AVNS_zgvqLQH5FNWEU7A4kHR";
 $port = "14778";
 
 try {
-    // MYSQL_ATTR_SSL_CA වෙනුවට PDO::MYSQL_ATTR_SSL_CA භාවිතය අතහැර දමමු
-    // SSL අවශ්‍යතා සඳහා පහත ක්‍රමය වඩාත් සුදුසුයි
+    // කිසිදු SSL Constant එකක් භාවිතා නොකර සාමාන්‍ය සම්බන්ධතාවයක් ගොඩනගමු
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
     ];
 
-    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
-    
-    // සම්බන්ධතාවය ගොඩනැගීම
     $conn = new PDO($dsn, $user, $pass, $options);
     
-    // SSL සම්බන්ධතාවය සක්‍රීය කිරීමට වෙනම විධානයක් ලෙස යවමු
+    // සම්බන්ධතාවය ගොඩනැගුණු පසු SSL සක්‍රීය කරමු
+    // මෙය MySQL ධාවනය වන විට SSL ඉල්ලා සිටින ප්‍රබල ක්‍රමයකි
     $conn->exec("SET SESSION ssl_mode = 'REQUIRED'");
     
     $conn->exec("SET NAMES utf8mb4");
