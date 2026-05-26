@@ -6,8 +6,9 @@ $pass = "AVNS_zgvqLQH5FNWEU7A4kHR";
 $port = "14778";
 
 try {
-    // කිසිදු SSL Constant එකක් භාවිතා නොකර සාමාන්‍ය සම්බන්ධතාවයක් ගොඩනගමු
-    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+    // SSL සම්බන්ධතාවය DS එක තුළම අර්ථ දක්වන්න
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4;sslmode=required";
+    
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -15,16 +16,11 @@ try {
     ];
 
     $conn = new PDO($dsn, $user, $pass, $options);
-    
-    // සම්බන්ධතාවය ගොඩනැගුණු පසු SSL සක්‍රීය කරමු
-    // මෙය MySQL ධාවනය වන විට SSL ඉල්ලා සිටින ප්‍රබල ක්‍රමයකි
-    $conn->exec("SET SESSION ssl_mode = 'REQUIRED'");
-    
     $conn->exec("SET NAMES utf8mb4");
     
 } catch(PDOException $e) {
-    error_log("Connection error: " . $e->getMessage());
-    die("Database connection failed.");
+    // දෝෂය පෙන්වීමට die() භාවිතා කරන්න, එවිට අපට ගැටලුව බලාගත හැක
+    die("Database Connection Error: " . $e->getMessage());
 }
 
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
