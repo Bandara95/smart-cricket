@@ -15,9 +15,11 @@ $is_admin = (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin')
 <header class="arena-navbar-ford" style="padding: 15px 0; transition: background 0.4s ease, padding 0.4s ease; position: fixed; top: 0; width: 100%; z-index: 1000; background: #0b0c10;">
     <div class="navbar-container" style="display: grid; grid-template-columns: auto 1fr auto; align-items: center; max-width: 1450px; margin: 0 auto; padding: 0 40px;">
         
-        <div class="arena-logo" style="color: #fff; font-weight: 800; font-size: 30px; margin-right: 50px;">
-            <i class="fas fa-cricket-bat-ball" style="color: #0073ff;"></i> SMART<span>CRICKET</span>
-        </div>
+        <div class="arena-logo" style="color: #fff; font-weight: 800; font-size: 30px; margin-right: 50px; display: flex; align-items: center; gap: 10px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 28px; height: 28px; fill: #0073ff;">
+        <path d="M490.5 21.5c-28.7-28.7-75.2-28.7-103.9 0L241 167 345 271l145.5-145.5c28.7-28.7 28.7-75.2 0-103.9zM218.4 189.6L16 392v104h104l202.4-202.4-104-104zM448 352c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64z"/>
+    </svg> SMART<span>CRICKET</span>
+</div>
         
         <nav class="arena-nav" style="display: flex; gap: 40px; justify-content: center;">
             <a href="index.php" class="nav-item <?php echo ($current_page === 'index.php') ? 'nav-active' : ''; ?>" style="text-decoration: none; font-size: 14px;">Home</a>
