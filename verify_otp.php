@@ -3,22 +3,6 @@ session_start();
 date_default_timezone_set('Asia/Colombo');
 include 'config/db.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
-
-// FIX: Mail credentials — env ලා / config file ලා ගන්නවා
-if (file_exists('config/mail_config.php')) {
-    include 'config/mail_config.php';
-} else {
-    define('MAIL_USERNAME', getenv('MAIL_USERNAME') ?: 'manathungamahaththaya@gmail.com');
-    define('MAIL_PASSWORD', getenv('MAIL_PASSWORD') ?: '');
-    define('MAIL_FROM',     getenv('MAIL_FROM')     ?: 'manathungamahaththaya@gmail.com');
-}
-
 $user_id          = $_SESSION['temp_user_id'] ?? '';
 $is_register_flow = isset($_SESSION['pending_user']);
 
@@ -27,8 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'resen
 
     header('Content-Type: application/json');
 
-    // FIX: Resend rate limiting — session ලා resend count track කරනවා
-    if (!isset($_SESSION['resend_count']))       $_SESSION['resend_count']      = 0;
+    if (!isset($_SESSION['resend_count']))        $_SESSION['resend_count']       = 0;
     if (!isset($_SESSION['resend_locked_until'])) $_SESSION['resend_locked_until'] = 0;
 
     if (time() < $_SESSION['resend_locked_until']) {
@@ -39,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'resen
 
     $_SESSION['resend_count']++;
     if ($_SESSION['resend_count'] > 3) {
-        $_SESSION['resend_locked_until'] = time() + (10 * 60); // 10 min lock
+        $_SESSION['resend_locked_until'] = time() + (10 * 60);
         $_SESSION['resend_count']        = 0;
         echo json_encode(['status' => 'error', 'message' => 'Too many resend attempts. Locked for 10 minutes.']);
         exit;
@@ -69,48 +52,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'resen
         exit;
     }
 
-    try {
-        $mail = new PHPMailer(true);
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = MAIL_USERNAME;
-        $mail->Password   = MAIL_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+    // ── Brevo API ─────────────────────────────────
+    $api_key   = getenv('BREVO_API_KEY') ?: '';
+    $mail_from = getenv('MAIL_FROM')     ?: 'manathungamahaththaya@gmail.com';
 
-        $mail->setFrom(MAIL_FROM, 'SmartCricket Arena');
-        $mail->addAddress($email);
-
-        $mail->isHTML(true);
-        $mail->Subject = 'Your New OTP Code - SmartCricket';
-
-        $mail->Body = "
-    <div style='background-color: #050505; padding: 40px; font-family: \"Inter\", sans-serif; text-align: center;'>
-        <div style='max-width: 500px; margin: 0 auto; background: #0f111a; border: 1px solid #0073ff; border-radius: 10px; padding: 40px 30px; box-shadow: 0 4px 20px rgba(0, 115, 255, 0.15);'>
-            <h2 style='color: #0073ff; font-size: 26px; font-weight: 800; margin-bottom: 5px; letter-spacing: 0.5px;'>SmartCricket Arena</h2>
-            <p style='color: #888888; font-size: 14px; margin-top: 0; margin-bottom: 25px;'>Security Verification Access</p>
-            <hr style='border: 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 25px;'>
-            <p style='color: #ffffff; font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 25px;'>
-                Your requested fresh security authorization access code is:
-            </p>
-            <div style='display: inline-block; background: rgba(255, 255, 255, 0.02); border: 1px solid #0073ff; border-radius: 6px; padding: 15px 35px; margin-bottom: 30px;'>
-                <span style='color: #ffffff; font-size: 32px; font-weight: 800; letter-spacing: 6px; font-family: monospace;'>{$otp}</span>
+    $data = [
+        'sender'      => ['name' => 'Cricket Arena', 'email' => $mail_from],
+        'to'          => [['email' => $email]],
+        'subject'     => 'Your New OTP Code - SmartCricket',
+        'htmlContent' => "
+        <div style='background-color: #050505; padding: 40px; font-family: Arial, sans-serif; text-align: center;'>
+            <div style='max-width: 500px; margin: 0 auto; background: #0f111a; border: 1px solid #0073ff; border-radius: 10px; padding: 40px 30px; box-shadow: 0 4px 20px rgba(0, 115, 255, 0.15);'>
+                <h2 style='color: #0073ff; font-size: 26px; font-weight: 800; margin-bottom: 5px;'>SmartCricket Arena</h2>
+                <p style='color: #888888; font-size: 14px; margin-top: 0; margin-bottom: 25px;'>Security Verification Access</p>
+                <hr style='border: 0; border-top: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px;'>
+                <p style='color: #ffffff; font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 25px;'>
+                    Your requested fresh security authorization access code is:
+                </p>
+                <div style='display: inline-block; background: rgba(255,255,255,0.02); border: 1px solid #0073ff; border-radius: 6px; padding: 15px 35px; margin-bottom: 30px;'>
+                    <span style='color: #ffffff; font-size: 32px; font-weight: 800; letter-spacing: 6px; font-family: monospace;'>{$otp}</span>
+                </div>
+                <p style='color: #666666; font-size: 12px; margin-top: 20px; line-height: 1.5;'>
+                    This OTP will expire in 10 minutes.
+                </p>
             </div>
-            <p style='color: #666666; font-size: 12px; margin-top: 20px; line-height: 1.5;'>
-                This secure OTP parameter will strictly expire in 10 minutes.
-            </p>
         </div>
-    </div>
-    ";
+        "
+    ];
 
-        $mail->AltBody = 'Your requested fresh security authorization access code is: ' . $otp;
-        $mail->send();
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'api-key: ' . $api_key
+    ]);
 
+    $response  = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($http_code === 201) {
         echo json_encode(['status' => 'success', 'message' => 'OTP sent successfully']);
-
-    } catch (Exception $e) {
-        error_log("Resend OTP error: " . $e->getMessage());
+    } else {
+        error_log("Brevo resend error: " . $response);
         echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP. Please try again.']);
     }
 
@@ -176,30 +162,29 @@ if (empty($user_id) && !$is_register_flow) {
     </div>
 
     <script>
-        const otpInput   = document.getElementById('otp_input');
-        const resendBtn  = document.getElementById('resendBtn');
+        const otpInput     = document.getElementById('otp_input');
+        const resendBtn    = document.getElementById('resendBtn');
         const resendStatus = document.getElementById('resendStatus');
 
         otpInput.addEventListener('focus', () => {
-            otpInput.style.borderColor       = '#0073ff';
-            otpInput.style.backgroundColor   = 'rgba(0, 115, 255, 0.02)';
-            otpInput.style.boxShadow         = '0 0 10px rgba(0, 115, 255, 0.15)';
+            otpInput.style.borderColor     = '#0073ff';
+            otpInput.style.backgroundColor = 'rgba(0, 115, 255, 0.02)';
+            otpInput.style.boxShadow       = '0 0 10px rgba(0, 115, 255, 0.15)';
         });
         otpInput.addEventListener('blur', () => {
-            otpInput.style.borderColor       = 'rgba(255, 255, 255, 0.08)';
-            otpInput.style.backgroundColor   = 'rgba(255, 255, 255, 0.03)';
-            otpInput.style.boxShadow         = 'none';
+            otpInput.style.borderColor     = 'rgba(255, 255, 255, 0.08)';
+            otpInput.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+            otpInput.style.boxShadow       = 'none';
         });
 
-        // Digits only
         otpInput.addEventListener('input', () => {
             otpInput.value = otpInput.value.replace(/\D/g, '');
         });
 
         resendBtn.addEventListener('click', function () {
-            resendBtn.disabled    = true;
+            resendBtn.disabled      = true;
             resendBtn.style.opacity = '0.5';
-            resendBtn.innerHTML   = '<i class="fas fa-spinner fa-spin"></i> Sending email...';
+            resendBtn.innerHTML     = '<i class="fas fa-spinner fa-spin"></i> Sending email...';
             resendStatus.style.display = 'none';
 
             fetch('verify_otp.php', {
@@ -212,9 +197,9 @@ if (empty($user_id) && !$is_register_flow) {
                 resendStatus.style.display = 'block';
                 if (data.status === 'success') {
                     resendStatus.style.background = 'rgba(0, 230, 118, 0.1)';
-                    resendStatus.style.border      = '1px solid rgba(0, 230, 118, 0.2)';
-                    resendStatus.style.color       = '#00e676';
-                    resendStatus.innerHTML         = '<i class="fas fa-check-circle"></i> ' + data.message;
+                    resendStatus.style.border     = '1px solid rgba(0, 230, 118, 0.2)';
+                    resendStatus.style.color      = '#00e676';
+                    resendStatus.innerHTML        = '<i class="fas fa-check-circle"></i> ' + data.message;
 
                     otpInput.value = '';
 
@@ -232,9 +217,9 @@ if (empty($user_id) && !$is_register_flow) {
                     }, 1000);
                 } else {
                     resendStatus.style.background = 'rgba(255, 61, 0, 0.1)';
-                    resendStatus.style.border      = '1px solid rgba(255, 61, 0, 0.2)';
-                    resendStatus.style.color       = '#ff3d00';
-                    resendStatus.innerHTML         = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
+                    resendStatus.style.border     = '1px solid rgba(255, 61, 0, 0.2)';
+                    resendStatus.style.color      = '#ff3d00';
+                    resendStatus.innerHTML        = '<i class="fas fa-exclamation-circle"></i> ' + data.message;
 
                     resendBtn.disabled      = false;
                     resendBtn.style.opacity = '1';
@@ -244,9 +229,9 @@ if (empty($user_id) && !$is_register_flow) {
             .catch(() => {
                 resendStatus.style.display    = 'block';
                 resendStatus.style.background = 'rgba(255, 61, 0, 0.1)';
-                resendStatus.style.border      = '1px solid rgba(255, 61, 0, 0.2)';
-                resendStatus.style.color       = '#ff3d00';
-                resendStatus.innerHTML         = '<i class="fas fa-wifi"></i> Network error occurred. Please try again.';
+                resendStatus.style.border     = '1px solid rgba(255, 61, 0, 0.2)';
+                resendStatus.style.color      = '#ff3d00';
+                resendStatus.innerHTML        = '<i class="fas fa-wifi"></i> Network error occurred. Please try again.';
 
                 resendBtn.disabled      = false;
                 resendBtn.style.opacity = '1';
