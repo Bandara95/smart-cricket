@@ -1,4 +1,9 @@
 <?php
+echo "Loaded extensions: ";
+print_r(get_loaded_extensions());
+exit; // මේක දැම්මම සර්වර් එකේ තියෙන ඔක්කොම extensions ටික පේනවා
+
+<?php
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include 'config/db.php';
 // SECURITY FIX: last_activity update only for verified + logged in users
