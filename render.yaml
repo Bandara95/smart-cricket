@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: cricket-arena
+    runtime: php
+    plan: free
+    buildCommand: "apt-get update && apt-get install -y php-mysql"
+    startCommand: "php -S 0.0.0.0:$PORT"
