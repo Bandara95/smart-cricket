@@ -1,10 +1,9 @@
 <?php
 // secure=false for localhost (HTTP). Change to true on production HTTPS server.
-$is_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'secure' => $is_secure,
+    'secure' => false,
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
@@ -44,9 +43,15 @@ unset($_SESSION['login_error']);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // CSRF Check
-    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-        die("Invalid request");
+    // CSRF Check — debug mode
+    if (!isset($_POST['csrf_token'])) {
+        die("CSRF token missing from POST");
+    }
+    if (!isset($_SESSION['csrf_token'])) {
+        die("CSRF token missing from SESSION — session not persisting!");
+    }
+    if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("CSRF mismatch — POST: " . substr($_POST['csrf_token'],0,8) . " | SESSION: " . substr($_SESSION['csrf_token'],0,8));
     }
 
     if (isset($_POST['nic_number'])) {
@@ -96,7 +101,7 @@ $_SESSION['admin_name'] = $user['full_name'];
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="Assets/CSS/style.css">
 </head>
 
 <body>
