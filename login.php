@@ -1,10 +1,14 @@
 <?php
-// secure=false for localhost (HTTP). Change to true on production HTTPS server.
-$is_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+// Force session settings for Render (HTTPS)
+ini_set('session.cookie_secure', '1');
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.use_strict_mode', '1');
+ini_set('session.use_only_cookies', '1');
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'secure' => $is_secure,
+    'secure' => true,
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
@@ -45,10 +49,8 @@ unset($_SESSION['login_error']);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // CSRF Check
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'])) {
-        $_SESSION['login_error'] = 'Session expired. Please try again.';
-        header('Location: login.php');
-        exit;
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Invalid request");
     }
 
     if (isset($_POST['nic_number'])) {
