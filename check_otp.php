@@ -1,11 +1,4 @@
 <?php
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path'     => '/',
-    'secure'   => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
 session_start();
 date_default_timezone_set('Asia/Colombo');
 include 'config/db.php';
