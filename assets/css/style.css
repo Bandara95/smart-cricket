@@ -1183,5 +1183,280 @@ body {
     }
 }
 
+/* =============================================================
+   MOBILE RESPONSIVE FIXES - v2 (Image-verified fixes)
+   ============================================================= */
 
+/* ── Hamburger Button ───────────────────────────────────────── */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 6px;
+    z-index: 1100;
+}
+.hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Tablet (max 992px) ─────────────────────────────────────── */
+@media (max-width: 992px) {
+    .navbar-container { padding: 15px 20px; }
+    .hero-title { font-size: 38px; }
+    .arena-features { padding: 60px 5%; }
+    .arena-location { padding: 60px 5%; }
+    .features-grid { flex-direction: column; gap: 20px; }
+    .location-container { flex-direction: column; gap: 40px; }
+    .booking-container { flex-direction: column; }
+    .booking-section { padding: 120px 20px 40px 20px; }
+    .booking-main { padding: 20px; }
+    .stats-row { flex-direction: column; gap: 20px; }
+    .dashboard-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+}
+
+/* ── Mobile (max 768px) ─────────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* === NAVBAR === */
+    .arena-navbar-ford .navbar-container {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px !important;
+        flex-wrap: nowrap;
+    }
+
+    .hamburger { display: flex; }
+    .arena-logo { font-size: 18px !important; letter-spacing: 1px; margin-right: 0 !important; }
+
+    .arena-nav {
+        display: none !important;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100vh;
+        background: rgba(11, 12, 16, 0.98);
+        flex-direction: column !important;
+        align-items: center;
+        justify-content: center;
+        gap: 32px !important;
+        z-index: 1050;
+    }
+    .arena-nav.mobile-open { display: flex !important; }
+    .arena-nav .nav-item { font-size: 22px !important; font-weight: 700; }
+    .mobile-nav-close {
+        position: absolute; top: 20px; right: 20px;
+        background: none; border: none; color: #fff;
+        font-size: 32px; cursor: pointer; z-index: 1060; line-height: 1;
+    }
+    .username-text { display: none; }
+    .account-label { display: none; }
+
+    /* === BOOKING PAGE - FIX: slot grid overflow === */
+    /* booking.php inline style override fix */
+    .booking-section {
+        padding: 90px 12px 40px 12px !important;
+    }
+
+    /* The modal-content box that wraps the booking form */
+    .booking-section .modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 20px 14px !important;
+        box-sizing: border-box;
+    }
+
+    /* Fix: slots-grid must stay within the card, no overflow */
+    .slots-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        max-height: 260px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important; /* KEY FIX: stop horizontal cut */
+        padding-right: 4px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .slot-card {
+        padding: 10px 6px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    .slot-time-text {
+        font-size: 11px !important;
+        word-break: break-word !important;
+    }
+
+    .slot-status { font-size: 10px !important; }
+
+    /* Booking Date input full width */
+    .input-group input[type="date"] {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Confirm button full width */
+    .booking-section .modal-btn {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* === USER DASHBOARD TABLE FIX === */
+    /* Wrapper gets horizontal scroll so table doesn't squeeze */
+    .dashboard-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+
+    /* Table itself: don't force wide min-width on mobile */
+    .dashboard-table {
+        min-width: 420px !important; /* enough for 4 cols, not too wide */
+        width: 100%;
+    }
+
+    /* Tighten cell padding on mobile */
+    .dashboard-table th,
+    .dashboard-table td {
+        padding: 12px 8px !important;
+        font-size: 12px !important;
+    }
+
+    /* Time slot pill - smaller on mobile */
+    .dashboard-table td span[style*="monospace"] {
+        font-size: 11px !important;
+        padding: 4px 6px !important;
+    }
+
+    /* Status badge smaller */
+    .dashboard-table td span[style*="00e676"] {
+        font-size: 11px !important;
+        padding: 3px 7px !important;
+    }
+
+    /* Dashboard main wrapper padding */
+    main[style*="max-width: 1000px"] {
+        margin-top: 80px !important;
+        padding: 0 12px !important;
+    }
+
+    /* Book New Slot button - keep it from breaking layout */
+    .dashboard-table + * a,
+    a.modal-btn.success-btn {
+        font-size: 11px !important;
+        padding: 6px 10px !important;
+        white-space: nowrap;
+    }
+
+    /* Header row of the bookings card */
+    div[style*="justify-content: space-between"] {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* === ADMIN DASHBOARD SIDEBAR === */
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        padding: 10px 0 !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-logo {
+        padding: 8px 16px !important;
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        width: 100%;
+    }
+    .sidebar nav {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        width: 100%;
+        padding: 0 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .sidebar nav::-webkit-scrollbar { display: none; }
+    .sidebar .nav-item {
+        padding: 8px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+        border-left: none !important;
+        border-bottom: 2px solid transparent;
+    }
+    .sidebar .nav-item.active {
+        border-left: none !important;
+        border-bottom: 2px solid var(--accent) !important;
+        background: var(--accent-bg) !important;
+    }
+    .sidebar-footer { display: none; }
+    .main { margin-left: 0 !important; padding: 20px 16px !important; }
+    .stats-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .topbar { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px !important; }
+    .tab-container { overflow-x: auto; flex-wrap: nowrap !important; scrollbar-width: none; }
+    .tab-container::-webkit-scrollbar { display: none; }
+    .tab-btn { white-space: nowrap; }
+    .section-head { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+    .search-wrap { width: 100%; }
+    .search-wrap input { width: 100%; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    thead, tbody { display: table; width: 100%; }
+    .premium-modal { width: 95vw !important; padding: 20px 14px !important; margin: 8% auto !important; }
+    .premium-grid { grid-template-columns: 1fr 1fr !important; }
+
+    /* === HERO === */
+    .arena-hero { padding: 0 5%; height: auto; min-height: 100vh; align-items: flex-end; padding-bottom: 60px; }
+    .arena-hero-content { max-width: 100%; }
+    .hero-title { font-size: 28px; letter-spacing: -0.5px; }
+    .hero-subtitle { font-size: 13px; }
+    .arena-hero-actions { flex-direction: column; gap: 12px; }
+    .arena-btn { padding: 14px 20px; font-size: 13px; width: 100%; text-align: center; }
+
+    /* === FEATURES / LOCATION === */
+    .arena-features { padding: 50px 16px; }
+    .section-header h2 { font-size: 24px; }
+    .feature-card { padding: 25px 20px; }
+    .arena-location { padding: 50px 16px; }
+    .location-text h2 { font-size: 24px; }
+
+    /* === FOOTER === */
+    .arena-footer { padding: 25px 16px; font-size: 12px; }
+
+    /* === MODAL (OTP etc.) === */
+    .modal-content { padding: 25px 18px; max-width: 95vw; }
+
+    /* Stat cards */
+    .stat-card { padding: 20px; gap: 15px; }
+    .stat-card i { font-size: 28px; }
+    .stat-card p { font-size: 20px; }
+    .table-container { padding: 16px; overflow-x: auto; }
+}
+
+/* ── Small Mobile (max 480px) ───────────────────────────────── */
+@media (max-width: 480px) {
+    .hero-title { font-size: 24px; }
+    .hero-badge { font-size: 11px; }
+    .arena-logo { font-size: 15px !important; }
+    .slot-time-text { font-size: 10px !important; }
+    .slots-grid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+    .dashboard-table { min-width: 380px !important; }
+}
 
