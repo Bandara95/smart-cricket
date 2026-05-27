@@ -1,9 +1,11 @@
 <?php
 // secure=false for localhost (HTTP). Change to true on production HTTPS server.
+// Production (Render) HTTPS auto-detect
+$is_secure = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on") || (isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PROTO"] === "https");
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'secure' => false,
+    'secure' => $is_secure,
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
@@ -95,7 +97,7 @@ $_SESSION['admin_name'] = $user['full_name'];
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="Assets/CSS/style.css">
 </head>
 
 <body>
