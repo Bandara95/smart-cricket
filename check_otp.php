@@ -1,4 +1,11 @@
 <?php
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'secure'   => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
 session_start();
 date_default_timezone_set('Asia/Colombo');
 include 'config/db.php';
@@ -169,7 +176,7 @@ render:
     <title>Processing Verification - SmartCricket Arena</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="Assets/CSS/style.css">
     <?php if ($success): ?>
         <meta http-equiv="refresh" content="3;url=<?php echo $redirect_page; ?>">
     <?php endif; ?>
