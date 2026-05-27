@@ -1,14 +1,10 @@
 <?php
-// Force session settings for Render (HTTPS)
-ini_set('session.cookie_secure', '1');
-ini_set('session.cookie_httponly', '1');
-ini_set('session.cookie_samesite', 'Lax');
-ini_set('session.use_strict_mode', '1');
-ini_set('session.use_only_cookies', '1');
+// secure=false for localhost (HTTP). Change to true on production HTTPS server.
+$is_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'secure' => true,
+    'secure' => $is_secure,
     'httponly' => true,
     'samesite' => 'Lax'
 ]);
