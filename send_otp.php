@@ -1,11 +1,4 @@
 <?php
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path'     => '/',
-    'secure'   => false, // production ලා true කරන්න (HTTPS)
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
 session_start();
 
 date_default_timezone_set('Asia/Colombo');
